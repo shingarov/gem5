@@ -92,7 +92,7 @@ struct TlbEntry
                  " or read-only mappings\n");
     }
 
-    Addr pageStart()
+    Addr pageStart() const
     {
         return _pageStart;
     }

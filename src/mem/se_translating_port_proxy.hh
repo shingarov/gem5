@@ -97,6 +97,8 @@ class SETranslatingPortProxy : public PortProxy
 
     void writeString(Addr addr, const char *str) const;
     void readString(std::string &str, Addr addr) const;
+
+    const char *externalizePageTable() const;
 };
 
 #endif // __MEM_SE_TRANSLATING_PORT_PROXY_HH__

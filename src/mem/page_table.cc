@@ -140,6 +140,16 @@ EmulationPageTable::lookup(Addr vaddr)
     return &(iter->second);
 }
 
+const char*
+FuncPageTable::externalize() const
+{
+    stringstream ss;
+    for (PTable::const_iterator it=pTable.begin(); it != pTable.end(); ++it) {
+        ss << std::hex << it->first << ":" << it->second.pageStart() << ";";
+    }
+    return strdup(ss.str().c_str());
+}
+
 bool
 EmulationPageTable::translate(Addr vaddr, Addr &paddr)
 {

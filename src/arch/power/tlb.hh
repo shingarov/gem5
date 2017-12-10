@@ -78,7 +78,7 @@ struct TlbEntry
     }
 
     Addr
-    pageStart()
+    pageStart() const
     {
         return _pageStart;
     }

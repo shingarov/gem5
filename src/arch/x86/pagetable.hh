@@ -104,7 +104,7 @@ namespace X86ISA
             vaddr = new_vaddr;
         }
 
-        Addr pageStart()
+        Addr pageStart() const
         {
             return paddr;
         }

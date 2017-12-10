@@ -837,6 +837,9 @@ std::map<char, BaseRemoteGDB::GdbCommand> BaseRemoteGDB::command_map = {
     { 'z', { "KGDB_CLR_HW_BKPT", &BaseRemoteGDB::cmd_clr_hw_bkpt } },
     // insert breakpoint or watchpoint
     { 'Z', { "KGDB_SET_HW_BKPT", &BaseRemoteGDB::cmd_set_hw_bkpt } },
+
+    // LW extensions; only one for now
+    { '.', { "LW_GET_TLB", &BaseRemoteGDB::cmd_lw_get_tlb } },
 };
 
 bool
@@ -1056,6 +1059,15 @@ BaseRemoteGDB::encodeXferResponse(const std::string &unencoded,
     else
         encoded += 'l';
     encodeBinaryData(unencoded.substr(offset, unencoded_length), encoded);
+}
+
+bool
+BaseRemoteGDB::cmd_lw_get_tlb(GdbCommand::Context &ctx)
+{
+    SETranslatingPortProxy &proxy = context->getMemProxy();
+    const char *s = proxy.externalizePageTable();
+    send(s);
+    return true;
 }
 
 bool

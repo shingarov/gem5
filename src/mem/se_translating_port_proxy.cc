@@ -216,3 +216,8 @@ SETranslatingPortProxy::readString(std::string &str, Addr addr) const
         fatal("readString(0x%x, ...) failed", addr);
 }
 
+const char*
+SETranslatingPortProxy::externalizePageTable() const
+{
+    return pTable->externalize();
+}
