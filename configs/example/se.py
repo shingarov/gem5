@@ -278,5 +278,8 @@ else:
     MemConfig.config_mem(options, system)
     config_filesystem(system, options)
 
+for cpu in system.cpu:
+    cpu.wait_for_remote_gdb = True
+
 root = Root(full_system = False, system = system)
 Simulation.run(options, root, system, FutureClass)
