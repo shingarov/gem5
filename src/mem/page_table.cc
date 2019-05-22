@@ -141,9 +141,9 @@ EmulationPageTable::lookup(Addr vaddr)
 }
 
 const char*
-FuncPageTable::externalize() const
+EmulationPageTable::externalize() const
 {
-    stringstream ss;
+    std::stringstream ss;
     for (PTable::const_iterator it=pTable.begin(); it != pTable.end(); ++it) {
         ss << std::hex << it->first << ":" << it->second.pageStart() << ";";
     }
