@@ -1064,7 +1064,7 @@ BaseRemoteGDB::encodeXferResponse(const std::string &unencoded,
 bool
 BaseRemoteGDB::cmd_lw_get_tlb(GdbCommand::Context &ctx)
 {
-    SETranslatingPortProxy &proxy = context->getMemProxy();
+    SETranslatingPortProxy &proxy = ctx.getMemProxy();
     const char *s = proxy.externalizePageTable();
     send(s);
     return true;
