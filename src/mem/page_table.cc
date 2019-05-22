@@ -145,7 +145,7 @@ EmulationPageTable::externalize() const
 {
     std::stringstream ss;
     for (PTable::const_iterator it=pTable.begin(); it != pTable.end(); ++it) {
-        ss << std::hex << it->first << ":" << it->second.pageStart() << ";";
+        ss << std::hex << it->first << ":" << it->second.paddr << ";";
     }
     return strdup(ss.str().c_str());
 }
