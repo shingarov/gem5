@@ -189,10 +189,15 @@ PhysicalMemory::createBackingStore(AddrRange range,
              "Cannot create backing store for interleaved range %s\n",
               range.to_string());
 
+    int shm_fd = shm_open("/gem5", O_CREAT | O_RDWR, 0666);
+    if (shm_fd == -1)
+               panic("Shared memory failed");
+    ftruncate(shm_fd, range.size());
+
     // perform the actual mmap
     DPRINTF(AddrRanges, "Creating backing store for range %s with size %d\n",
             range.to_string(), range.size());
-    int map_flags = MAP_ANON | MAP_PRIVATE;
+    int map_flags = MAP_SHARED;
 
     // to be able to simulate very large memories, the user can opt to
     // pass noreserve to mmap
@@ -202,7 +207,7 @@ PhysicalMemory::createBackingStore(AddrRange range,
 
     uint8_t* pmem = (uint8_t*) mmap(NULL, range.size(),
                                     PROT_READ | PROT_WRITE,
-                                    map_flags, -1, 0);
+                                    map_flags, shm_fd, 0);
 
     if (pmem == (uint8_t*) MAP_FAILED) {
         perror("mmap");
