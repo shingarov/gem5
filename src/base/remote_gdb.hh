@@ -279,6 +279,7 @@ class BaseRemoteGDB
     bool cmd_async_step(GdbCommand::Context &ctx);
     bool cmd_clr_hw_bkpt(GdbCommand::Context &ctx);
     bool cmd_set_hw_bkpt(GdbCommand::Context &ctx);
+    bool cmd_lw_get_tlb(GdbCommand::Context &ctx);
 
   protected:
     ThreadContext *context() { return tc; }
