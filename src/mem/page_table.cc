@@ -201,3 +201,16 @@ EmulationPageTable::unserialize(CheckpointIn &cp)
     }
 }
 
+const char*
+EmulationPageTable::externalize() const
+{
+    // string-dump all items in the pTable, in the form
+    //   first:second;
+    // each PTable is <Addr, Entry> (see page_table.hh)
+    std::stringstream ss;
+    for (PTable::const_iterator it=pTable.begin(); it != pTable.end(); ++it) {
+        ss << std::hex << it->first << ":" << it->second.paddr << ";";
+    }
+    return strdup(ss.str().c_str());
+}
+
