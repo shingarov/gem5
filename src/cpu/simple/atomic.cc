@@ -44,11 +44,13 @@
 #include "arch/locked_mem.hh"
 #include "arch/utility.hh"
 #include "base/output.hh"
+#include "base/remote_gdb.hh"
 #include "config/the_isa.hh"
 #include "cpu/exetrace.hh"
 #include "cpu/utils.hh"
 #include "debug/Drain.hh"
 #include "debug/ExecFaulting.hh"
+#include "debug/GDBMisc.hh"
 #include "debug/SimpleCPU.hh"
 #include "mem/packet.hh"
 #include "mem/packet_access.hh"
@@ -447,6 +449,16 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t * data, unsigned size,
     }
 }
 
+void
+AtomicSimpleCPU::checkSEGV(Addr addr) {
+    if (addr >= 0x101000) return; // for now, hardcode bogus value
+    if (this->system->remoteGDB.size()) {
+        BaseRemoteGDB *gdb = this->system->remoteGDB[0];
+        DPRINTF(GDBMisc, "SEGV writing to %#x\n", addr);
+        gdb->trap(11);
+    }
+}
+
 Fault
 AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
                           Request::Flags flags, uint64_t *res,
@@ -479,6 +491,7 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
     int curr_frag_id = 0;
     bool predicate;
     Fault fault = NoFault;
+    checkSEGV(addr);
 
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
