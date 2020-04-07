@@ -304,6 +304,16 @@ BaseSimpleCPU::setupFetchRequest(const RequestPtr &req)
 
 
 void
+BaseSimpleCPU::serviceInstCountEvents()
+{
+    // check for instruction-count-based events
+    SimpleExecContext &t_info = *threadInfo[curThread];
+    SimpleThread* thread = t_info.thread;
+    thread->comInstEventQueue.serviceEvents(t_info.numInst);
+}
+
+
+void
 BaseSimpleCPU::preExecute()
 {
     SimpleExecContext &t_info = *threadInfo[curThread];
@@ -315,9 +325,6 @@ BaseSimpleCPU::preExecute()
     // resets predicates
     t_info.setPredicate(true);
     t_info.setMemAccPredicate(true);
-
-    // check for instruction-count-based events
-    thread->comInstEventQueue.serviceEvents(t_info.numInst);
 
     // decode the instruction
     TheISA::PCState pcState = thread->pcState();
