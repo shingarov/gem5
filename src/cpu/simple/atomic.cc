@@ -664,6 +664,8 @@ AtomicSimpleCPU::tick()
             return;
         }
 
+        serviceInstCountEvents();
+
         Fault fault = NoFault;
 
         TheISA::PCState pcState = thread->pcState();
