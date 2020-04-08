@@ -234,7 +234,7 @@ class AtomicSimpleCPU : public BaseSimpleCPU
      * debugging).
      */
     void printAddr(Addr a);
-    void checkSEGV(Addr a);
+    Fault checkSEGV(Addr a);
 };
 
 #endif // __CPU_SIMPLE_ATOMIC_HH__

@@ -449,14 +449,12 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t * data, unsigned size,
     }
 }
 
-void
+Fault
 AtomicSimpleCPU::checkSEGV(Addr addr) {
-    if (addr >= 0x101000) return; // for now, hardcode bogus value
-    if (this->system->remoteGDB.size()) {
-        BaseRemoteGDB *gdb = this->system->remoteGDB[0];
-        DPRINTF(GDBMisc, "SEGV writing to %#x\n", addr);
-        gdb->trap(11);
-    }
+    // for now, hardcode bogus value
+    if (addr >= 0x101000 && !(addr & 0x80000000))
+        return NoFault;
+    return std::make_shared<SqueakFault>();
 }
 
 Fault
@@ -490,8 +488,10 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
     int size_left = size;
     int curr_frag_id = 0;
     bool predicate;
-    Fault fault = NoFault;
-    checkSEGV(addr);
+    Fault fault = checkSEGV(addr);
+    if (fault != NoFault) {
+        return fault;
+    }
 
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,

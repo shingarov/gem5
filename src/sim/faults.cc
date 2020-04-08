@@ -30,6 +30,7 @@
 
 #include "arch/isa_traits.hh"
 #include "base/logging.hh"
+#include "base/remote_gdb.hh"
 #include "cpu/base.hh"
 #include "cpu/thread_context.hh"
 #include "debug/Fault.hh"
@@ -49,6 +50,13 @@ void FaultBase::invoke(ThreadContext * tc, const StaticInstPtr &inst)
 void UnimpFault::invoke(ThreadContext * tc, const StaticInstPtr &inst)
 {
     panic("Unimpfault: %s\n", panicStr.c_str());
+}
+
+void SqueakFault::invoke(ThreadContext *tc, const StaticInstPtr &inst)
+{
+    if (tc->getSystemPtr()->remoteGDB.size()) {
+        tc->getSystemPtr()->remoteGDB[0]->trap(11);
+    }
 }
 
 void ReExec::invoke(ThreadContext *tc, const StaticInstPtr &inst)
