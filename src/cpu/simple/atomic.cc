@@ -389,7 +389,10 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t * data, unsigned size,
     int frag_size = 0;
     int size_left = size;
     bool predicate;
-    Fault fault = NoFault;
+    Fault fault = checkSEGV(addr);
+    if (fault != NoFault) {
+        return fault;
+    }
 
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
@@ -451,8 +454,11 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t * data, unsigned size,
 
 Fault
 AtomicSimpleCPU::checkSEGV(Addr addr) {
-    // for now, hardcode bogus value
-    if (addr >= 0x101000 && !(addr & 0x80000000))
+    // for now, hardcode bogus value for readOnlyBelow
+    if (  addr >= 0x101000 &&
+        !(addr &  0x80000000) &&
+         (addr != 0x7FFFFFFF)
+       )
         return NoFault;
     return std::make_shared<SqueakFault>();
 }
