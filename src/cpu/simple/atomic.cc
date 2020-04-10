@@ -389,10 +389,8 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t * data, unsigned size,
     int frag_size = 0;
     int size_left = size;
     bool predicate;
-    Fault fault = checkSEGV(addr);
-    if (fault != NoFault) {
-        return fault;
-    }
+    Fault fault = NoFault;
+    if (addr & 0xF0000000) return std::make_shared<SqueakFault>();
 
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
@@ -453,17 +451,6 @@ AtomicSimpleCPU::readMem(Addr addr, uint8_t * data, unsigned size,
 }
 
 Fault
-AtomicSimpleCPU::checkSEGV(Addr addr) {
-    // for now, hardcode bogus value for readOnlyBelow
-    if (  addr >= 0x101000 &&
-        !(addr &  0x80000000) &&
-         (addr != 0x7FFFFFFF)
-       )
-        return NoFault;
-    return std::make_shared<SqueakFault>();
-}
-
-Fault
 AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
                           Request::Flags flags, uint64_t *res,
                           const std::vector<bool>& byte_enable)
@@ -494,10 +481,9 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
     int size_left = size;
     int curr_frag_id = 0;
     bool predicate;
-    Fault fault = checkSEGV(addr);
-    if (fault != NoFault) {
-        return fault;
-    }
+    Fault fault = NoFault;
+    if (addr & 0xF0000000) return std::make_shared<SqueakFault>();
+    if (addr < 0x00101000) return std::make_shared<SqueakFault>();
 
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
@@ -733,9 +719,11 @@ AtomicSimpleCPU::tick()
                 // HACK ALERT: this is extremely weird; OpenSmalltalk expects
                 // the jump to 0xBADF00D5 to fail at target, not here
                 if ((threadInfo[curThread]->thread->nextInstAddr()
-                                        & 0xF0000000) == 0x80000000) {
+                                        & 0xF0000000) == 0x80000000)
                     fault = std::make_shared<SqueakFault>();
-                }
+                if ((threadInfo[curThread]->thread->nextInstAddr()
+                                        & 0xF0000000) == 0x70000000)
+                    fault = std::make_shared<SqueakFault>();
 
                 // keep an instruction count
                 if (fault == NoFault) {
