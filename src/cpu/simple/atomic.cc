@@ -715,15 +715,6 @@ AtomicSimpleCPU::tick()
             Tick stall_ticks = 0;
             if (curStaticInst) {
                 fault = curStaticInst->execute(&t_info, traceData);
-                // don't wait until the fetch of the next instr segfaults
-                // HACK ALERT: this is extremely weird; OpenSmalltalk expects
-                // the jump to 0xBADF00D5 to fail at target, not here
-                if ((threadInfo[curThread]->thread->nextInstAddr()
-                                        & 0xF0000000) == 0x80000000)
-                    fault = std::make_shared<SqueakFault>();
-                if ((threadInfo[curThread]->thread->nextInstAddr()
-                                        & 0xF0000000) == 0x70000000)
-                    fault = std::make_shared<SqueakFault>();
 
                 // keep an instruction count
                 if (fault == NoFault) {
