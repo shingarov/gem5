@@ -483,7 +483,7 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
     bool predicate;
     Fault fault = NoFault;
     if (addr & 0xF0000000) return std::make_shared<SqueakFault>();
-    if (addr < 0x00101000) return std::make_shared<SqueakFault>();
+    if (addr < 0x00120000) return std::make_shared<SqueakFault>();
 
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
