@@ -62,6 +62,15 @@ class UnimpFault : public FaultBase
                 StaticInst::nullStaticInstPtr);
 };
 
+class SqueakFault : public FaultBase
+{
+  public:
+    virtual FaultName name() const { return "Squeak simulation callback"; }
+    SqueakFault() {}
+    void invoke(ThreadContext *tc, const StaticInstPtr &inst =
+                StaticInst::nullStaticInstPtr);
+};
+
 class ReExec : public FaultBase
 {
   public:
