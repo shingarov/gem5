@@ -44,11 +44,13 @@
 #include "arch/locked_mem.hh"
 #include "arch/utility.hh"
 #include "base/output.hh"
+#include "base/remote_gdb.hh"
 #include "config/the_isa.hh"
 #include "cpu/exetrace.hh"
 #include "cpu/utils.hh"
 #include "debug/Drain.hh"
 #include "debug/ExecFaulting.hh"
+#include "debug/GDBMisc.hh"
 #include "debug/SimpleCPU.hh"
 #include "mem/packet.hh"
 #include "mem/packet_access.hh"
@@ -479,6 +481,18 @@ AtomicSimpleCPU::writeMem(uint8_t *data, unsigned size, Addr addr,
     int curr_frag_id = 0;
     bool predicate;
     Fault fault = NoFault;
+
+    // Fail if writing below the R/O mark.
+    // The below line of code is BOGUS: this should be done properly
+    // by (1) marking R/O pages according to the ELF section flags,
+    // and (2) checking the R/O flag on the page.
+    // Nor is it altogether needed, because the n-code not writing
+    // to the n-zone is simply a useful debug assertion.
+    // When in the future we erase the fixed boundary regarding what
+    // gets executed on which side of the SEGV fence, the JIT will be
+    // able to execute natively and this assert will fully disappear.
+
+    // if (addr < 0x00120000) return std::make_shared<SqueakFault>();
 
     while (1) {
         predicate = genMemFragmentRequest(req, frag_addr, size, flags,
