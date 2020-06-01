@@ -43,6 +43,7 @@
 #include "arch/x86/generated/decoder.hh"
 #include "arch/x86/isa_traits.hh"
 #include "base/loader/symtab.hh"
+#include "base/remote_gdb.hh"
 #include "base/trace.hh"
 #include "cpu/thread_context.hh"
 #include "debug/Faults.hh"
@@ -164,12 +165,15 @@ namespace X86ISA
 
             // print information about what we are panic'ing on
             if (!inst) {
-                panic("Tried to %s unmapped address %#x.\n", modeStr, addr);
+                DPRINTF(Faults, "SEGV %s %#x.\n", modeStr, addr);
             } else {
-                panic("Tried to %s unmapped address %#x.\nPC: %#x, Instr: %s",
+                DPRINTF(Faults, "SEGV %s %#x.\nPC: %#x, Instr: %s",
                       modeStr, addr, tc->pcState().pc(),
                       inst->disassemble(tc->pcState().pc(), debugSymbolTable));
             }
+
+            // report SEGV to GDB
+            tc->getSystemPtr()->remoteGDB[0]->trap(11);
         }
     }
 
