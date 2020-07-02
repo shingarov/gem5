@@ -343,7 +343,14 @@ RemoteGDB::getXferFeaturesRead(const std::string &annex, std::string &output)
         GDB_XML("aarch64-fpu.xml", gdb_xml_aarch64_fpu),
     };
 #undef GDB_XML
-    auto& annexMap = inAArch64(context()) ? annexMap64 : annexMap32;
+    std::map<std::string, std::string> annexMap;
+    if (inAArch64(context())) {
+        DPRINTF(GDBAcc, "GDB XML: aarch64\n");
+        annexMap = annexMap64;
+    } else {
+        DPRINTF(GDBAcc, "GDB XML: arm32\n");
+        annexMap = annexMap32;
+    }
     auto it = annexMap.find(annex);
     if (it == annexMap.end())
         return false;
