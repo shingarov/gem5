@@ -71,8 +71,10 @@ using namespace std;
 
 PhysicalMemory::PhysicalMemory(const string& _name,
                                const vector<AbstractMemory*>& _memories,
-                               bool mmap_using_noreserve) :
-    _name(_name), size(0), mmapUsingNoReserve(mmap_using_noreserve)
+                               bool mmap_using_noreserve,
+                               const std::string& shared_backstore) :
+    _name(_name), size(0), mmapUsingNoReserve(mmap_using_noreserve),
+    sharedBackstore(shared_backstore)
 {
     if (mmap_using_noreserve)
         warn("Not reserving swap space. May cause SIGSEGV on actual usage\n");
@@ -189,15 +191,25 @@ PhysicalMemory::createBackingStore(AddrRange range,
              "Cannot create backing store for interleaved range %s\n",
               range.to_string());
 
-    int shm_fd = shm_open("/gem5", O_CREAT | O_RDWR, 0666);
-    if (shm_fd == -1)
-               panic("Shared memory failed");
-    ftruncate(shm_fd, range.size());
-
     // perform the actual mmap
     DPRINTF(AddrRanges, "Creating backing store for range %s with size %d\n",
             range.to_string(), range.size());
-    int map_flags = MAP_SHARED;
+
+    int shm_fd;
+    int map_flags;
+
+    if (sharedBackstore.empty()) {
+        shm_fd = -1;
+        map_flags =  MAP_ANON | MAP_PRIVATE;
+    } else {
+        DPRINTF(AddrRanges, "Sharing backing store as %s\n",
+                sharedBackstore.c_str());
+        shm_fd = shm_open(sharedBackstore.c_str(), O_CREAT | O_RDWR, 0666);
+        if (shm_fd == -1)
+               panic("Shared memory failed");
+        ftruncate(shm_fd, range.size());
+        map_flags = MAP_SHARED;
+    }
 
     // to be able to simulate very large memories, the user can opt to
     // pass noreserve to mmap
