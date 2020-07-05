@@ -34,7 +34,6 @@
 #include "cpu/base.hh"
 #include "cpu/thread_context.hh"
 #include "debug/Fault.hh"
-#include "debug/Faults.hh"
 #include "mem/page_table.hh"
 #include "sim/full_system.hh"
 #include "sim/process.hh"
@@ -78,7 +77,7 @@ void GenericPageTableFault::invoke(ThreadContext *tc, const StaticInstPtr &inst)
         handled = p->fixupFault(vaddr);
     }
     if (!handled)
-        DPRINTF(Faults, "SEGV at virtual address %#x\n", vaddr);
+        DPRINTF(Fault, "SEGV at virtual address %#x\n", vaddr);
         tc->getSystemPtr()->remoteGDB[0]->trap(11);
 }
 
