@@ -176,17 +176,17 @@ RemoteGDB::PowerGdbRegCache::getRegs(ThreadContext *context)
     // PC, MSR, CR, LR, CTR, XER (32-bit each)
 
     for (int i = 0; i < NumIntArchRegs; i++)
-        r.gpr[i] = htobe((uint32_t)context->readIntReg(i));
+        r.gpr[i] = htole((uint32_t)context->readIntReg(i));
 
     for (int i = 0; i < NumFloatArchRegs; i++)
         r.fpr[i] = context->readFloatReg(i);
 
-    r.pc = htobe((uint32_t)context->pcState().pc());
+    r.pc = htole((uint32_t)context->pcState().pc());
     r.msr = 0; // Is MSR modeled?
-    r.cr = htobe((uint32_t)context->readIntReg(INTREG_CR));
-    r.lr = htobe((uint32_t)context->readIntReg(INTREG_LR));
-    r.ctr = htobe((uint32_t)context->readIntReg(INTREG_CTR));
-    r.xer = htobe((uint32_t)context->readIntReg(INTREG_XER));
+    r.cr = htole((uint32_t)context->readIntReg(INTREG_CR));
+    r.lr = htole((uint32_t)context->readIntReg(INTREG_LR));
+    r.ctr = htole((uint32_t)context->readIntReg(INTREG_CTR));
+    r.xer = htole((uint32_t)context->readIntReg(INTREG_XER));
 }
 
 void
@@ -195,17 +195,17 @@ RemoteGDB::PowerGdbRegCache::setRegs(ThreadContext *context) const
     DPRINTF(GDBAcc, "setRegs in remotegdb \n");
 
     for (int i = 0; i < NumIntArchRegs; i++)
-        context->setIntReg(i, betoh(r.gpr[i]));
+        context->setIntReg(i, letoh(r.gpr[i]));
 
     for (int i = 0; i < NumFloatArchRegs; i++)
         context->setFloatReg(i, r.fpr[i]);
 
-    context->pcState(betoh(r.pc));
+    context->pcState(letoh(r.pc));
     // Is MSR modeled?
-    context->setIntReg(INTREG_CR, betoh(r.cr));
-    context->setIntReg(INTREG_LR, betoh(r.lr));
-    context->setIntReg(INTREG_CTR, betoh(r.ctr));
-    context->setIntReg(INTREG_XER, betoh(r.xer));
+    context->setIntReg(INTREG_CR, letoh(r.cr));
+    context->setIntReg(INTREG_LR, letoh(r.lr));
+    context->setIntReg(INTREG_CTR, letoh(r.ctr));
+    context->setIntReg(INTREG_XER, letoh(r.xer));
 }
 
 BaseGdbRegCache*
