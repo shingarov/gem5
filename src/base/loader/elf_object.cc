@@ -187,11 +187,13 @@ ElfObject::determineArch()
         arch = (eclass == ELFCLASS64) ? Riscv64 : Riscv32;
     } else if (emach == EM_PPC && eclass == ELFCLASS32) {
         arch = Power;
+/*
         if (edata != ELFDATA2MSB) {
             fatal("The binary you're trying to load is compiled for "
                   "little endian Power.\ngem5 only supports big "
                   "endian Power. Please recompile your binary.\n");
         }
+*/
     } else if (emach == EM_PPC64) {
         fatal("The binary you're trying to load is compiled for 64-bit "
               "Power. M5\n only supports 32-bit Power. Please "
