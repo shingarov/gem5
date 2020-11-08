@@ -55,6 +55,7 @@ BitUnion32(Xer)
     Bitfield<31> so;
     Bitfield<30> ov;
     Bitfield<29> ca;
+    Bitfield<31, 28> topNibble;
 EndBitUnion(Xer)
 
 BitUnion32(Fpscr)
