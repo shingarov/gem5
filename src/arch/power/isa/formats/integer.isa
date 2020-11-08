@@ -268,8 +268,9 @@ def format IntSumOp(src1, src2, ca = {{ 0 }}, computeCA = 0,
         code += computeCACode % dict + setXERCode
 
     # Setup the 4 code versions and add code to access XER if necessary
-    code_rc1 = readXERCode + code
+    #code_rc1 = readXERCode + code
     code_oe1 = readXERCode + code + computeOVCode % dict + setXERCode
+    code_rc1     = readXERCode + code + computeOVCode % dict + setXERCode
     code_rc1_oe1 = readXERCode + code + computeOVCode % dict + setXERCode
     if (computeCA or ca == 'xer.ca'):
         code = readXERCode + code

@@ -29,6 +29,8 @@
 #ifndef __BASE_CONDCODE_HH__
 #define __BASE_CONDCODE_HH__
 
+#include <cstdio>
+
 #include "base/bitfield.hh"
 
 /**
@@ -91,6 +93,8 @@ static inline bool
 findOverflow(int width, uint64_t dest, uint64_t src1, uint64_t src2)
 {
     int shift = width - 1;
+printf("*** findOverflow -> %lld\n",
+                ((src1 ^ ~src2) & (src1 ^ dest)) & (1ULL << shift));
     return ((src1 ^ ~src2) & (src1 ^ dest)) & (1ULL << shift);
 }
 
