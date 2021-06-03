@@ -49,4 +49,11 @@ extra_python_nodes = [
 
 extra_python_paths = [ node.abspath for node in extra_python_nodes ]
 
+#
+# Horrible workaround to get m5 into Python's sys.path
+#
+import sys
+for path in extra_python_paths:
+	sys.path.append(path)
+
 __all__ = ['extra_python_paths']
