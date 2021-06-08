@@ -92,3 +92,8 @@ import sys
 importer = CodeImporter()
 add_module = importer.add_module
 sys.meta_path.append(importer)
+
+# A (very) dirty hack to add 'six' Python module to load path
+import os.path
+six_path = os.path.join(os.path.dirname(sys.executable), '..' , '..' , 'ext' , 'six-1.16.0')
+sys.path.append(os.path.join(six_path))
