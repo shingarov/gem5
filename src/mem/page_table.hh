@@ -163,6 +163,7 @@ class EmulationPageTable : public Serializable
     Fault translate(const RequestPtr &req);
 
     void getMappings(std::vector<std::pair<Addr, Addr>> *addr_mappings);
+    const char *externalize() const;
 
     void serialize(CheckpointOut &cp) const override;
     void unserialize(CheckpointIn &cp) override;
